@@ -23,8 +23,24 @@
     <FILE id="dpY5V1" name="pitch_detector.h" compile="0" resource="0"
           file="pitch_detector.h"/>
     <GROUP id="{886C85AE-8407-7552-81F9-33B3406A0C9F}" name="Source">
+      <FILE id="HAdrzk" name="jucetice_MeterComponent.cpp" compile="1" resource="0"
+            file="Source/jucetice_MeterComponent.cpp"/>
+      <FILE id="pXnheR" name="jucetice_MeterComponent.h" compile="0" resource="0"
+            file="Source/jucetice_MeterComponent.h"/>
       <GROUP id="{89FE1F79-C3B9-45A1-B615-523E06928249}" name="images">
+        <FILE id="jxIitB" name="arrleft.png" compile="0" resource="1" file="Source/arrleft.png"/>
+        <FILE id="trrZlR" name="arrleft_green.png" compile="0" resource="1"
+              file="Source/arrleft_green.png"/>
+        <FILE id="QkmYtH" name="arrleft_orange.png" compile="0" resource="1"
+              file="Source/arrleft_orange.png"/>
+        <FILE id="h9RT7t" name="arrright.png" compile="0" resource="1" file="Source/arrright.png"/>
+        <FILE id="TphhUX" name="arrright_green.png" compile="0" resource="1"
+              file="Source/arrright_green.png"/>
+        <FILE id="uubTRp" name="arrright_orange.png" compile="0" resource="1"
+              file="Source/arrright_orange.png"/>
+        <FILE id="mtvAKE" name="flat.png" compile="0" resource="1" file="Source/flat.png"/>
         <FILE id="gs9XQN" name="power.svg" compile="0" resource="1" file="Source/power.svg"/>
+        <FILE id="LBpHEJ" name="sharp.png" compile="0" resource="1" file="Source/sharp.png"/>
       </GROUP>
       <FILE id="iHuDmq" name="AppInc.h" compile="0" resource="0" file="Source/AppInc.h"/>
       <FILE id="hujKbK" name="AppLookAndFeel.h" compile="0" resource="0"

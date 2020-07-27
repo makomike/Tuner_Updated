@@ -10,7 +10,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
+#include "jucetice_MeterComponent.h"
 //==============================================================================
 Pitchdetect_autocorrelateAudioProcessorEditor::Pitchdetect_autocorrelateAudioProcessorEditor (Pitchdetect_autocorrelateAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
@@ -21,38 +21,37 @@ Pitchdetect_autocorrelateAudioProcessorEditor::Pitchdetect_autocorrelateAudioPro
     
     addAndMakeVisible (noteNameLabel);
     noteNameLabel.setLookAndFeel(&aLAF);
-    noteNameLabel.setText ("--", juce::dontSendNotification);
-    noteNameLabel.setColour (juce::Label::textColourId, juce::Colours::orange);
-    noteNameLabel.setJustificationType (juce::Justification::centred);
-    noteNameLabel.setFont (juce::Font (70.0f, juce::Font::bold));
+    noteNameLabel.setText("--", juce::dontSendNotification);
+    noteNameLabel.setColour(juce::Label::textColourId, juce::Colours::orange);
+    noteNameLabel.setJustificationType(juce::Justification::centred);
+    noteNameLabel.setFont(juce::Font(65.0f, juce::Font::bold));
+    noteNameLabel.setBounds(235, 60, 75, 75);
     
-    
-    addAndMakeVisible(sliderFlat);
-    sliderFlat.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    sliderFlat.setRange(0, 50.00);
-    sliderFlat.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 0, 0);
-    sliderFlat.setScrollWheelEnabled (false);
-    
-    addAndMakeVisible(sliderSharp);
-    sliderSharp.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    sliderSharp.setRange(0, 50.00);
-    sliderSharp.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 0, 0);
-    sliderSharp.setScrollWheelEnabled (false);
 
-    
-    
+    flatMeter.reset(new MeterComponent(MeterComponent::MeterHorizontal, 20, 2, Colours::orange, Colours::orangered, Colours::darkorange, Colour(0xFF444444)));
+    addAndMakeVisible(flatMeter.get());
+    flatMeter->setName("flatMeter");
+    flatMeter->setBounds(90, 50, 175, 20);
+
+
+    sharpMeter.reset(new MeterComponent(MeterComponent::MeterHorizontal, 20, 2, Colours::orange, Colours::orangered, Colours::darkorange, Colour(0xFF444444)));
+    addAndMakeVisible(sharpMeter.get());
+    sharpMeter->setName("sharpMeter");
+    sharpMeter->setBounds(280, 50, 175, 20);
+
+
     addAndMakeVisible(power);
+    power.setBounds(10, 40, 50, 50);
+
     power.setLookAndFeel(&pbLAF);
     power.onClick = [this] {
        //Do something with the ui
-        sliderSharp.setEnabled(power.getToggleState());
-        sliderFlat.setEnabled(power.getToggleState());
+       
         if(power.getToggleState()){
             startTimer (50);
         }else {
             stopTimer();
-            sliderSharp.setValue(0.0f);
-            sliderFlat.setValue(0.0f);
+            updateWidgetValues("--", 0.0f);
             noteNameLabel.setText("--",juce::dontSendNotification);
         }
      
@@ -70,36 +69,57 @@ Pitchdetect_autocorrelateAudioProcessorEditor::~Pitchdetect_autocorrelateAudioPr
 void Pitchdetect_autocorrelateAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-   g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 
     g.setColour(juce::Colours::orange);
-    g.setFont (20.0f);
+    g.setFont(25.0f);
     g.drawFittedText("TUNER", 10, 10, getWidth(), 30, juce::Justification::topLeft, 1);
-    
-    g.setColour(juce::Colours::grey);
-    g.setFont (Font (30.00f, Font::italic));
-    g.drawText ("b",
-                20, 90, 200, 30,
-                Justification::centred, true);                                  
 
-    g.setColour(juce::Colours::grey);
-    g.setFont (Font (30.00f, Font::italic));
-    g.drawText ("#",
-                262, 90, 200, 30,
-                Justification::centred, true);
 
-    
+    const int flat_png_size = 591;
+    Image flat = ImageCache::getFromMemory(BinaryData::flat_png, flat_png_size);
+    g.drawImageAt(flat, 63, 50);
+
+    const int sharp_png_size = 535;
+    Image sharp = ImageCache::getFromMemory(BinaryData::sharp_png, sharp_png_size);
+    g.drawImageAt(sharp, 455, 50);
+
+
+    int arrleft_png_size = 486;
+    int arrright_png_size = 941;
+
+    Image arrleft = ImageCache::getFromMemory(BinaryData::arrleft_png, arrleft_png_size);
+    Image arrright = ImageCache::getFromMemory(BinaryData::arrright_png, arrright_png_size);
+
+    if (arrowColourFlags == GREEN) {
+        arrleft_png_size = 415;
+        arrright_png_size = 875;
+
+        arrleft = ImageCache::getFromMemory(BinaryData::arrleft_green_png, arrleft_png_size);
+
+        arrright = ImageCache::getFromMemory(BinaryData::arrright_green_png, arrright_png_size);
+
+    }
+    if (arrowColourFlags == ORANGE) {
+        arrleft_png_size = 463;
+        arrright_png_size = 956;
+
+        arrleft = ImageCache::getFromMemory(BinaryData::arrleft_orange_png, arrleft_png_size);
+
+        arrright = ImageCache::getFromMemory(BinaryData::arrright_orange_png, arrright_png_size);
+    }
+
+    g.drawImageAt(arrright, 355, 83);
+    g.drawImageAt(arrleft, 170, 87);
+
 }
 
 void Pitchdetect_autocorrelateAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-        noteNameLabel.setBounds (0,  40, getWidth(),  70);
-        power.setBounds(10, 40, 50, 50);
+
     
-        sliderFlat.setBounds(70, 20, 100, 100);
-        sliderSharp.setBounds(315, 20, 100, 100);
 }
 
 double noteFromPitch(float frequency) {
@@ -122,31 +142,36 @@ void Pitchdetect_autocorrelateAudioProcessorEditor::updateWidgetValues(String no
     const String noteDefault = "--";
     noteNameLabel.setColour(juce::Label::textColourId, juce::Colours::orange);
     noteNameLabel.setText(noteDefault,juce::dontSendNotification);
-    sliderFlat.setValue(0.0f);
-    sliderSharp.setValue(0.0f);
+    sharpMeter -> setValue(0.0f);
+    flatMeter -> setValue(0.0f);
+    arrowColourFlags = ORANGE;
    
-    if (pitchTune == 0.0f && noteName == noteDefault)
+    if (pitchTune == 0.0f && noteName == noteDefault) {
+        arrowColourFlags = GREY;
+        repaint();
         return;
-
+    }
     //TODO change colours of text to green
     if (pitchTune == 0.0f && noteName != noteDefault) {
-
+        
         noteNameLabel.setText(noteName, juce::dontSendNotification);
         noteNameLabel.setColour(juce::Label::textColourId, juce::Colours::green);
+        arrowColourFlags = GREEN;
+        repaint();
         return;
 
     }
 
     if(pitchTune < 0.0f){
-        sliderFlat.setValue(abs(pitchTune));
+        flatMeter -> setValue(abs(pitchTune)/100);
     }
 
     if(pitchTune > 0.0f){
-        sliderSharp.setValue(pitchTune);
+        sharpMeter -> setValue(pitchTune/ 100);
     }
-
-
+    
     noteNameLabel.setText(noteName,juce::dontSendNotification);
+    repaint();
 }
 void Pitchdetect_autocorrelateAudioProcessorEditor::timerCallback()
 {

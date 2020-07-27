@@ -10,7 +10,6 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
 //==============================================================================
 Pitchdetect_autocorrelateAudioProcessor::Pitchdetect_autocorrelateAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
