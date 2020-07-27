@@ -47,7 +47,6 @@ Pitchdetect_autocorrelateAudioProcessorEditor::Pitchdetect_autocorrelateAudioPro
        //Do something with the ui
         sliderSharp.setEnabled(power.getToggleState());
         sliderFlat.setEnabled(power.getToggleState());
-       
         if(power.getToggleState()){
             startTimer (50);
         }else {
@@ -56,8 +55,9 @@ Pitchdetect_autocorrelateAudioProcessorEditor::Pitchdetect_autocorrelateAudioPro
             sliderFlat.setValue(0.0f);
             noteNameLabel.setText("--",juce::dontSendNotification);
         }
+     
     };
-
+    
     setSize (492, 162);
     
 }
@@ -72,15 +72,15 @@ void Pitchdetect_autocorrelateAudioProcessorEditor::paint (Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
-    g.setColour(juce::Colours::white);
-    g.setFont (15.0f);
+    g.setColour(juce::Colours::orange);
+    g.setFont (20.0f);
     g.drawFittedText("TUNER", 10, 10, getWidth(), 30, juce::Justification::topLeft, 1);
     
     g.setColour(juce::Colours::grey);
     g.setFont (Font (30.00f, Font::italic));
     g.drawText ("b",
                 20, 90, 200, 30,
-                Justification::centred, true);
+                Justification::centred, true);                                  
 
     g.setColour(juce::Colours::grey);
     g.setFont (Font (30.00f, Font::italic));
@@ -119,14 +119,24 @@ double centsOffFromPitch(float frequency, float note) {
 }
 
 void Pitchdetect_autocorrelateAudioProcessorEditor::updateWidgetValues(String noteName, float pitchTune) {
-    noteNameLabel.setText("--",juce::dontSendNotification);
+    const String noteDefault = "--";
+    noteNameLabel.setColour(juce::Label::textColourId, juce::Colours::orange);
+    noteNameLabel.setText(noteDefault,juce::dontSendNotification);
     sliderFlat.setValue(0.0f);
     sliderSharp.setValue(0.0f);
-    
-    //TODO change colours of text to green
-    if(pitchTune == 0.0f)
+   
+    if (pitchTune == 0.0f && noteName == noteDefault)
         return;
-    
+
+    //TODO change colours of text to green
+    if (pitchTune == 0.0f && noteName != noteDefault) {
+
+        noteNameLabel.setText(noteName, juce::dontSendNotification);
+        noteNameLabel.setColour(juce::Label::textColourId, juce::Colours::green);
+        return;
+
+    }
+
     if(pitchTune < 0.0f){
         sliderFlat.setValue(abs(pitchTune));
     }
@@ -134,19 +144,28 @@ void Pitchdetect_autocorrelateAudioProcessorEditor::updateWidgetValues(String no
     if(pitchTune > 0.0f){
         sliderSharp.setValue(pitchTune);
     }
+
+
     noteNameLabel.setText(noteName,juce::dontSendNotification);
 }
 void Pitchdetect_autocorrelateAudioProcessorEditor::timerCallback()
 {
         Pitchdetect_autocorrelateAudioProcessor& ourProcessor = getProcessor();
         double key = ourProcessor.pitch / 2;
+
+        if (key <= 0.0f) {
+            updateWidgetValues("--",0.0f);
+            return;
+        }
+        
+        
         
         std::array<String, 12> not = { "C","C#","D","Eb","E","F","F#","G","G#","A","Bb","B"};
 
         int currentKey = noteFromPitch(key);
         int Note = frequencyFromNoteNumber(currentKey);
         float pitchTune = centsOffFromPitch(key, currentKey);
-        String noteName = (String)not[currentKey % 12]
+        String noteName = (String)not[currentKey % 12];
         
         updateWidgetValues(noteName, pitchTune);
 }

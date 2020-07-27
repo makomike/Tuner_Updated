@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="b3YMAe" name="pitchdetect_autocorrelate" projectType="audioplug"
-              jucerVersion="5.4.7">
-  <MAINGROUP id="gWgkrB" name="pitchdetect_autocorrelate">
+<JUCERPROJECT id="b3YMAe" name="Tuner" projectType="audioplug" displaySplashScreen="1"
+              jucerFormatVersion="1">
+  <MAINGROUP id="gWgkrB" name="Tuner">
     <GROUP id="{35D439A4-5968-A5C9-4532-8D08A2665849}" name="audio_fft">
       <GROUP id="{E0264797-750A-A191-D025-EBEC6216ACF8}" name="AudioFFT">
         <GROUP id="{81F1F8F0-1D0A-4DA4-458D-B04828CCB861}" name="test">
@@ -110,6 +110,7 @@
   </MODULES>
   <LIVE_SETTINGS>
     <OSX/>
+    <WINDOWS/>
   </LIVE_SETTINGS>
   <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
 </JUCERPROJECT>
