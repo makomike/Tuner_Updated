@@ -51,14 +51,15 @@ private:
     
     AppLookAndFeelCls aLAF;
     PowerButtonLookAndFeel pbLAF;
-
     ToggleButton power;
     Label noteNameLabel;
     Label title;
+
     std::unique_ptr<MeterComponent> flatMeter;
     std::unique_ptr<MeterComponent> sharpMeter;
 
     int arrowColourFlags;
+    bool isPowerOn = false;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Pitchdetect_autocorrelateAudioProcessorEditor)
 };

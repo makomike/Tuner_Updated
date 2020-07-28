@@ -22,9 +22,8 @@ Pitchdetect_autocorrelateAudioProcessorEditor::Pitchdetect_autocorrelateAudioPro
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 
-   
+    createTitle(&title, "Tuner");
 
-    createTitle(&title, "TUNER");
     setLookAndFeel(&aLAF);
     addAndMakeVisible (noteNameLabel);
     noteNameLabel.setLookAndFeel(&aLAF);
@@ -54,43 +53,37 @@ Pitchdetect_autocorrelateAudioProcessorEditor::Pitchdetect_autocorrelateAudioPro
     power.setBounds(10, 40, 50, 50);
 
     power.setLookAndFeel(&pbLAF);
+
     power.onClick = [this] {
        //Do something with the ui
-       
+        isPowerOn = power.getToggleState();
+        createTitle(&title, "Tuner");
         if(power.getToggleState()){
             startTimer (50);
-            createTitle(&title, "Tuner");
 
         }else {
             stopTimer();
             updateWidgetValues("--", 0.0f);
             noteNameLabel.setText("--",juce::dontSendNotification);
-            createTitle(&title, "Tuner");
         }
-     
-    };
     
+    };
     addAndMakeVisible(&title);
+    
     setSize (500, 150);
     
 }
 
-
 void Pitchdetect_autocorrelateAudioProcessorEditor::createTitle(juce::Label* label, juce::String title) {
     label->setText(title, juce::NotificationType::dontSendNotification);
-    label->setColour(juce::Label::outlineColourId, juce::Colours::white);
     label->setJustificationType(juce::Justification::topLeft);
+    label->setColour(juce::Label::textColourId, juce::Colours::white);
     label->setBounds(16, 16, 100, 25);
     label->setFont(25.0f);
-    auto powerIsOn = power.getToggleStateValue();
-    if (power.getToggleState()){
+    if (isPowerOn){
         label->setColour(juce::Label::textColourId, UI_Color1);
-        return;
     }
 }
-
-
-
 
 Pitchdetect_autocorrelateAudioProcessorEditor::~Pitchdetect_autocorrelateAudioProcessorEditor()
 {
@@ -104,11 +97,6 @@ void Pitchdetect_autocorrelateAudioProcessorEditor::paint (Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 
-    //g.setColour(juce::Colours::orange);
-    //g.setFont(25.0f);
-    //g.drawFittedText("TUNER", 10, 10, getWidth(), 30, juce::Justification::topLeft, 1);
-
-
     const int flat_png_size = 591;
     Image flat = ImageCache::getFromMemory(BinaryData::flat_png, flat_png_size);
     g.drawImageAt(flat, 63, 50);
@@ -116,7 +104,6 @@ void Pitchdetect_autocorrelateAudioProcessorEditor::paint (Graphics& g)
     const int sharp_png_size = 535;
     Image sharp = ImageCache::getFromMemory(BinaryData::sharp_png, sharp_png_size);
     g.drawImageAt(sharp, 455, 50);
-
 
     int arrleft_png_size = 486;
     int arrright_png_size = 941;
@@ -133,6 +120,7 @@ void Pitchdetect_autocorrelateAudioProcessorEditor::paint (Graphics& g)
         arrright = ImageCache::getFromMemory(BinaryData::arrright_green_png, arrright_png_size);
 
     }
+
     if (arrowColourFlags == ORANGE) {
         arrleft_png_size = 463;
         arrright_png_size = 956;
@@ -149,10 +137,7 @@ void Pitchdetect_autocorrelateAudioProcessorEditor::paint (Graphics& g)
 
 void Pitchdetect_autocorrelateAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
-
-    
+   
 }
 
 double noteFromPitch(float frequency) {
@@ -184,7 +169,7 @@ void Pitchdetect_autocorrelateAudioProcessorEditor::updateWidgetValues(String no
         repaint();
         return;
     }
-    //TODO change colours of text to green
+
     if (pitchTune == 0.0f && noteName != noteDefault) {
         
         noteNameLabel.setText(noteName, juce::dontSendNotification);
@@ -216,14 +201,11 @@ void Pitchdetect_autocorrelateAudioProcessorEditor::timerCallback()
             return;
         }
         
-        
-        
-        std::array<String, 12> not = { "C","C#","D","Eb","E","F","F#","G","G#","A","Bb","B"};
+        std::array<String, 12> notes = { "C","C#","D","Eb","E","F","F#","G","G#","A","Bb","B"};
 
         int currentKey = noteFromPitch(key);
-        int Note = frequencyFromNoteNumber(currentKey);
         float pitchTune = centsOffFromPitch(key, currentKey);
-        String noteName = (String)not[currentKey % 12];
+        String noteName = (String)notes[currentKey % 12];
         
         updateWidgetValues(noteName, pitchTune);
 }

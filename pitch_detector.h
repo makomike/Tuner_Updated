@@ -22,7 +22,7 @@
 #include <float.h>
 #include <complex>
 
-namespace enrique {
+namespace volume {
     
 using namespace juce;
 

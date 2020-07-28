@@ -59,7 +59,8 @@ public:
     float pitch = 0.0;
 private:
     //==============================================================================
-    enrique::PitchMPM pitchMPM;
+  
+    volume::PitchMPM pitchMPM;
     AudioSampleBuffer sampleBuffer;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Pitchdetect_autocorrelateAudioProcessor)
 };
