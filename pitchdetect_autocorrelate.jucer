@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="b3YMAe" name="Tuner" projectType="audioplug" displaySplashScreen="1"
-              jucerFormatVersion="1">
+              jucerFormatVersion="1" pluginManufacturer="Volume.com">
   <MAINGROUP id="gWgkrB" name="Tuner">
     <GROUP id="{35D439A4-5968-A5C9-4532-8D08A2665849}" name="audio_fft">
       <GROUP id="{E0264797-750A-A191-D025-EBEC6216ACF8}" name="AudioFFT">

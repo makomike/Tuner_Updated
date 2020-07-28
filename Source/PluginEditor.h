@@ -28,6 +28,7 @@ public:
     void paint (Graphics&) override;
     void resized() override;
     void timerCallback() override;
+    void createTitle(juce::Label* label, juce::String title);
     void updateWidgetValues(String noteName, float pitchTune);
     enum designFlags {
         GREY = 1,
@@ -53,6 +54,7 @@ private:
 
     ToggleButton power;
     Label noteNameLabel;
+    Label title;
     std::unique_ptr<MeterComponent> flatMeter;
     std::unique_ptr<MeterComponent> sharpMeter;
 

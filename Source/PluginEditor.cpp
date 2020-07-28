@@ -12,13 +12,20 @@
 #include "PluginEditor.h"
 #include "jucetice_MeterComponent.h"
 //==============================================================================
+
+
+
+
 Pitchdetect_autocorrelateAudioProcessorEditor::Pitchdetect_autocorrelateAudioProcessorEditor (Pitchdetect_autocorrelateAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
+
+   
+
+    createTitle(&title, "TUNER");
     setLookAndFeel(&aLAF);
-    
     addAndMakeVisible (noteNameLabel);
     noteNameLabel.setLookAndFeel(&aLAF);
     noteNameLabel.setText("--", juce::dontSendNotification);
@@ -38,8 +45,11 @@ Pitchdetect_autocorrelateAudioProcessorEditor::Pitchdetect_autocorrelateAudioPro
     addAndMakeVisible(sharpMeter.get());
     sharpMeter->setName("sharpMeter");
     sharpMeter->setBounds(280, 50, 175, 20);
+    sharpMeter->setTransform(AffineTransform::rotation((float)3.14f,
+                        sharpMeter->getPosition().getX() + (sharpMeter->getWidth() * 0.5f),
+                        sharpMeter->getPosition().getY() + (sharpMeter->getHeight() * 0.5f)));
 
-
+ 
     addAndMakeVisible(power);
     power.setBounds(10, 40, 50, 50);
 
@@ -49,31 +59,54 @@ Pitchdetect_autocorrelateAudioProcessorEditor::Pitchdetect_autocorrelateAudioPro
        
         if(power.getToggleState()){
             startTimer (50);
+            createTitle(&title, "Tuner");
+
         }else {
             stopTimer();
             updateWidgetValues("--", 0.0f);
             noteNameLabel.setText("--",juce::dontSendNotification);
+            createTitle(&title, "Tuner");
         }
      
     };
     
-    setSize (492, 162);
+    addAndMakeVisible(&title);
+    setSize (500, 150);
     
 }
 
+
+void Pitchdetect_autocorrelateAudioProcessorEditor::createTitle(juce::Label* label, juce::String title) {
+    label->setText(title, juce::NotificationType::dontSendNotification);
+    label->setColour(juce::Label::outlineColourId, juce::Colours::white);
+    label->setJustificationType(juce::Justification::topLeft);
+    label->setBounds(16, 16, 100, 25);
+    label->setFont(25.0f);
+    auto powerIsOn = power.getToggleStateValue();
+    if (power.getToggleState()){
+        label->setColour(juce::Label::textColourId, UI_Color1);
+        return;
+    }
+}
+
+
+
+
 Pitchdetect_autocorrelateAudioProcessorEditor::~Pitchdetect_autocorrelateAudioProcessorEditor()
 {
+    setLookAndFeel(nullptr);
 }
 
 //==============================================================================
 void Pitchdetect_autocorrelateAudioProcessorEditor::paint (Graphics& g)
 {
+    
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 
-    g.setColour(juce::Colours::orange);
-    g.setFont(25.0f);
-    g.drawFittedText("TUNER", 10, 10, getWidth(), 30, juce::Justification::topLeft, 1);
+    //g.setColour(juce::Colours::orange);
+    //g.setFont(25.0f);
+    //g.drawFittedText("TUNER", 10, 10, getWidth(), 30, juce::Justification::topLeft, 1);
 
 
     const int flat_png_size = 591;
