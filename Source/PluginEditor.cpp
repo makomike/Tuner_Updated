@@ -30,48 +30,45 @@ Pitchdetect_autocorrelateAudioProcessorEditor::Pitchdetect_autocorrelateAudioPro
     noteNameLabel.setText("--", juce::dontSendNotification);
     noteNameLabel.setColour(juce::Label::textColourId, juce::Colours::orange);
     noteNameLabel.setJustificationType(juce::Justification::centred);
-    noteNameLabel.setFont(juce::Font(65.0f, juce::Font::bold));
+    noteNameLabel.setFont(juce::Font(20.0f, juce::Font::bold));
     noteNameLabel.setBounds(235, 60, 75, 75);
     
 
     flatMeter.reset(new MeterComponent(MeterComponent::MeterHorizontal, 20, 2, Colours::orange, Colours::orangered, Colours::darkorange, Colour(0xFF444444)));
-    addAndMakeVisible(flatMeter.get());
     flatMeter->setName("flatMeter");
     flatMeter->setBounds(90, 50, 175, 20);
+    flatMeter->setTransform(AffineTransform::rotation((float)3.14f,
+                            flatMeter->getPosition().getX() + (flatMeter->getWidth() * 0.5f),
+                            flatMeter->getPosition().getY() + (flatMeter->getHeight() * 0.5f)));
+    addAndMakeVisible(flatMeter.get());
 
 
     sharpMeter.reset(new MeterComponent(MeterComponent::MeterHorizontal, 20, 2, Colours::orange, Colours::orangered, Colours::darkorange, Colour(0xFF444444)));
-    addAndMakeVisible(sharpMeter.get());
     sharpMeter->setName("sharpMeter");
     sharpMeter->setBounds(280, 50, 175, 20);
-    sharpMeter->setTransform(AffineTransform::rotation((float)3.14f,
-                        sharpMeter->getPosition().getX() + (sharpMeter->getWidth() * 0.5f),
-                        sharpMeter->getPosition().getY() + (sharpMeter->getHeight() * 0.5f)));
+    addAndMakeVisible(sharpMeter.get());
 
- 
-    addAndMakeVisible(power);
+
+
     power.setBounds(10, 40, 50, 50);
-
     power.setLookAndFeel(&pbLAF);
-
+    addAndMakeVisible(power);
     power.onClick = [this] {
        //Do something with the ui
         isPowerOn = power.getToggleState();
         createTitle(&title, "Tuner");
         if(power.getToggleState()){
             startTimer (50);
-
+          //  flatMeter->setValue(1);
         }else {
             stopTimer();
+           // flatMeter->setValue(0);
             updateWidgetValues("--", 0.0f);
             noteNameLabel.setText("--",juce::dontSendNotification);
         }
-    
     };
     addAndMakeVisible(&title);
-    
     setSize (500, 150);
-    
 }
 
 void Pitchdetect_autocorrelateAudioProcessorEditor::createTitle(juce::Label* label, juce::String title) {
@@ -157,21 +154,26 @@ double centsOffFromPitch(float frequency, float note) {
 }
 
 void Pitchdetect_autocorrelateAudioProcessorEditor::updateWidgetValues(String noteName, float pitchTune) {
+
+    const float pitchTuneThreshold = 10.0f;
     const String noteDefault = "--";
+    noteNameLabel.setText(noteDefault, juce::dontSendNotification);
     noteNameLabel.setColour(juce::Label::textColourId, juce::Colours::orange);
-    noteNameLabel.setText(noteDefault,juce::dontSendNotification);
     sharpMeter -> setValue(0.0f);
     flatMeter -> setValue(0.0f);
     arrowColourFlags = ORANGE;
-   
+    
+
     if (pitchTune == 0.0f && noteName == noteDefault) {
+
         arrowColourFlags = GREY;
         repaint();
         return;
+
     }
 
-    if (pitchTune == 0.0f && noteName != noteDefault) {
-        
+    if ((pitchTune >= 0 && pitchTune <= pitchTuneThreshold ) && noteName != noteDefault) {
+
         noteNameLabel.setText(noteName, juce::dontSendNotification);
         noteNameLabel.setColour(juce::Label::textColourId, juce::Colours::green);
         arrowColourFlags = GREEN;
@@ -180,14 +182,21 @@ void Pitchdetect_autocorrelateAudioProcessorEditor::updateWidgetValues(String no
 
     }
 
-    if(pitchTune < 0.0f){
+    if(pitchTune < 0){
+
+        if (sharpMeter->getValue() > 0 && pitchTune < 0)
+            return;
         flatMeter -> setValue(abs(pitchTune)/100);
+
     }
 
-    if(pitchTune > 0.0f){
+    if(pitchTune > 0){
+        if (flatMeter->getValue() > 0 && pitchTune > 0)
+            return;
         sharpMeter -> setValue(pitchTune/ 100);
     }
     
+  
     noteNameLabel.setText(noteName,juce::dontSendNotification);
     repaint();
 }

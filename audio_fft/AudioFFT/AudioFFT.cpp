@@ -21,7 +21,7 @@
 
 #include "AudioFFT.h"
 
-#include <cassert>
+//#include <cassert>
 #include <cmath>
 #include <cstring>
 
@@ -1175,7 +1175,7 @@ namespace audiofft
 
   void AudioFFT::init(size_t size)
   {
-    assert(detail::IsPowerOf2(size));
+    //assert(detail::IsPowerOf2(size));
     _impl->init(size);
   }
 
