@@ -19,9 +19,9 @@ Pitchdetect_autocorrelateAudioProcessorEditor::Pitchdetect_autocorrelateAudioPro
     noteNameLabel.setLookAndFeel(&aLAF);
     noteNameLabel.setText("--", juce::dontSendNotification);
     noteNameLabel.setColour(juce::Label::textColourId, juce::Colours::orange);
-    noteNameLabel.setJustificationType(juce::Justification::centred);
+    noteNameLabel.setJustificationType(juce::Justification::centredTop);
     noteNameLabel.setFont(juce::Font(50.0f, juce::Font::bold));
-    noteNameLabel.setBounds(235, 60, 75, 75);
+    noteNameLabel.setBounds(235, 71, 75, 55);
     flatMeter.reset(new MeterComponent(MeterComponent::MeterHorizontal, 20, 2, Colours::orange, Colours::orangered, Colours::darkorange, Colour(0xFF444444)));
     flatMeter->setName("flatMeter");
     flatMeter->setBounds(90, 50, 175, 20);
@@ -88,6 +88,9 @@ void Pitchdetect_autocorrelateAudioProcessorEditor::paint(Graphics& g)
         arrright_png_size = 875;
         arrleft = ImageCache::getFromMemory(BinaryData::arrleft_green_png, arrleft_png_size);
         arrright = ImageCache::getFromMemory(BinaryData::arrright_green_png, arrright_png_size);
+        g.setColour(Colours::green);
+        const Rectangle<float> area(260, 50, 25, 20);
+        g.drawRect(area, 50);
     }
     if (arrowColourFlags == ORANGE) {
         arrleft_png_size = 463;
